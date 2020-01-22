@@ -14,7 +14,8 @@ type lexer struct {
 	states []stateFunc
 }
 
-func lex(input string) (*lexer, chan Token) {
+func lex(input string) (*lexer, *Memory) {
+	m := newMem()
 	l := &lexer{
 		input:  input,
 		start:  0,
@@ -24,19 +25,24 @@ func lex(input string) (*lexer, chan Token) {
 	}
 
 	go l.run()
-	return l, l.tokens
+	return l, m
 }
 
 func (l *lexer) run(m *Memory) {
 	scanner := bufio.NewScanner(strings.NewReader(l.input))
 	scanner.Split(bufio.ScanRunes)
+
+	var jumpStart int
+
 	for scanner.Scan() {
 		r := scanner.Text()
 		switch r {
 		case "[":
-			// okay, the jumps are gonna be weird
+			jumpStart := l.pos
 		case "]":
-			// l.emit(RightJump)
+			if m.Get() != 0 {
+				l.pos = jumpStart
+			}
 		case ">":
 			m.RShift()
 		case "<":
@@ -46,18 +52,20 @@ func (l *lexer) run(m *Memory) {
 		case "-":
 			m.Dec()
 		case ".":
-			var v int
-			n, err := fmt.Scanf("%d", &v)
-			if len(n) > 1 || err != nil {
-				return // uhhhhhhhhhhhhhh
-			}
-			m.Set(v)
 			// fmt.Printf("%s", m.Get())
 		case ",":
-			// l.emit(LeftJump)
+			var v int
+			n, err := fmt.Scanf("%d", &v)
+			// i'm gonna be a troglodyte and pretend that only ascii numerals exist
+			if n != 1 || err != nil {
+				return // uhhhhhhhhhhhhhh
+				// i hate this but i'm too lazy to figure out a better solution right now
+			}
+			m.Set(v)
 		default:
 			continue
 		}
+		l.pos += 1 // it's important to increment the position counter AFTER we do the work
 	}
 
 	close(l.tokens)
