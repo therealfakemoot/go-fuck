@@ -5,7 +5,7 @@ type Token struct {
 	Raw  byte
 }
 
-type stateFn func(m *Memory)
+type stateFunc func(m *Memory)
 
 type Type string
 
@@ -26,3 +26,12 @@ type Memory struct {
 	active int
 	cells  []int
 }
+
+func (m *Memory) RShift() { m.active++ }
+func (m *Memory) LShift() { m.active-- }
+
+func (m *Memory) Inc() { m.cells[m.active]++ }
+func (m *Memory) Dec() { m.cells[m.active]-- }
+
+func (m *Memory) Get() int  { return m.cells[m.active] }
+func (m *Memory) Set(n int) { m.cells[m.active] = n }
