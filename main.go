@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"strings"
 )
@@ -24,7 +25,7 @@ func lex(input string) (*lexer, *Memory) {
 		states: make([]stateFunc, 0),
 	}
 
-	go l.run()
+	l.run(m)
 	return l, m
 }
 
@@ -38,7 +39,7 @@ func (l *lexer) run(m *Memory) {
 		r := scanner.Text()
 		switch r {
 		case "[":
-			jumpStart := l.pos
+			jumpStart = l.pos
 		case "]":
 			if m.Get() != 0 {
 				l.pos = jumpStart
@@ -72,5 +73,11 @@ func (l *lexer) run(m *Memory) {
 }
 
 func main() {
-	fmt.Println("vim-go")
+	var c string
+	flag.StringVar(&c, "code", "", "brainfuck program to execute")
+
+	flag.Parse()
+
+	_, m := lex(c)
+	fmt.Printf("%#v\n", m)
 }
