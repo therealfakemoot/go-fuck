@@ -2,7 +2,7 @@ package main
 
 type Token struct {
 	Type Type
-	Raw  byte
+	Raw  rune
 }
 
 type stateFunc func(m *Memory)

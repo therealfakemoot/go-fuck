@@ -78,6 +78,5 @@ func main() {
 
 	flag.Parse()
 
-	_, m := lex(c)
-	fmt.Printf("%#v\n", m)
+	// here is where i plug os.Stdout into some slot in my lexer/interpreter type so the brainfuck program can produce its output
 }
