@@ -34,7 +34,7 @@ func lex(input string) (*lexer, chan Token) {
 }
 
 func (l *lexer) next() string {
-	if l.pos > len(l.input) {
+	if l.pos > len(l.input)-1 {
 		return "eof"
 	}
 	r := l.input[l.pos]
