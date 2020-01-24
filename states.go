@@ -21,7 +21,7 @@ func lexText(l *lexer) stateFunc {
 	case ",":
 		return Set
 	default:
-		return nil
+		return lexText
 	}
 }
 

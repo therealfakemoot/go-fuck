@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Lexer(t *testing.T) {
-	t.Run("trivial cases", func(t *testing.T) {
+	t.Run("single ops", func(t *testing.T) {
 		cases := []struct {
 			in       string
 			expected []Token
@@ -19,6 +19,31 @@ func Test_Lexer(t *testing.T) {
 			{"]", []Token{RJumpToken}},
 			{",", []Token{SetToken}},
 			{".", []Token{GetToken}},
+		}
+
+		for _, tt := range cases {
+
+			_, tokens := lex(tt.in)
+			var actual []Token
+			for token := range tokens {
+				actual = append(actual, token)
+			}
+
+			if !reflect.DeepEqual(actual, tt.expected) {
+				t.Logf("Exepcted %s, got %s", tt.expected, actual)
+				t.Fail()
+			}
+		}
+	})
+	t.Run("short, working code", func(t *testing.T) {
+		cases := []struct {
+			in       string
+			expected []Token
+		}{
+			{"++++", []Token{IncToken, IncToken, IncToken, IncToken}},
+			{">--", []Token{RShiftToken, DecToken, DecToken}},
+			{" >--", []Token{RShiftToken, DecToken, DecToken}},
+			{"<- -", []Token{LShiftToken, DecToken, DecToken}},
 		}
 
 		for _, tt := range cases {

@@ -73,5 +73,7 @@ func main() {
 	for t := range tokens {
 		fmt.Printf("%#v\n", t)
 	}
+	//" >--"
+	//"<- -"
 	// here is where i plug os.Stdout into some slot in my lexer/interpreter type so the brainfuck program can produce its output
 }
