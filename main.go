@@ -8,67 +8,58 @@ import (
 )
 
 type lexer struct {
-	input  string
-	start  int
+	input  []string
 	pos    int
 	tokens chan Token
 	states []stateFunc
 }
 
-func lex(input string) (*lexer, *Memory) {
-	m := newMem()
+func lex(input string) (*lexer, chan Token) {
 	l := &lexer{
-		input:  input,
-		start:  0,
+		input:  make([]string, 0),
 		pos:    0,
 		tokens: make(chan Token),
 		states: make([]stateFunc, 0),
 	}
 
-	l.run(m)
-	return l, m
-}
-
-func (l *lexer) run(m *Memory) {
-	scanner := bufio.NewScanner(strings.NewReader(l.input))
+	scanner := bufio.NewScanner(strings.NewReader(input))
 	scanner.Split(bufio.ScanRunes)
 
-	var jumpStart int
-
 	for scanner.Scan() {
-		r := scanner.Text()
-		switch r {
-		case "[":
-			jumpStart = l.pos
-		case "]":
-			if m.Get() != 0 {
-				l.pos = jumpStart
-			}
-		case ">":
-			m.RShift()
-		case "<":
-			m.LShift()
-		case "+":
-			m.Inc()
-		case "-":
-			m.Dec()
-		case ".":
-			// fmt.Printf("%s", m.Get())
-		case ",":
-			var v int
-			n, err := fmt.Scanf("%d", &v)
-			// i'm gonna be a troglodyte and pretend that only ascii numerals exist
-			if n != 1 || err != nil {
-				return // uhhhhhhhhhhhhhh
-				// i hate this but i'm too lazy to figure out a better solution right now
-			}
-			m.Set(v)
-		default:
-			continue
-		}
-		l.pos += 1 // it's important to increment the position counter AFTER we do the work
+		l.input = append(l.input, scanner.Text())
 	}
 
+	go l.run()
+	return l, l.tokens
+}
+
+func (l *lexer) next() string {
+	if l.pos > len(l.input) {
+		return "eof"
+	}
+	r := l.input[l.pos]
+	l.pos++
+	return r
+}
+
+func (l *lexer) backup() {
+	l.pos--
+}
+
+func (l *lexer) peek() string {
+	r := l.next()
+	l.backup()
+	return r
+}
+
+func (l *lexer) emit(t Token) {
+	l.tokens <- t
+}
+
+func (l *lexer) run() {
+	for state := lexText; state != nil; {
+		state = state(l)
+	}
 	close(l.tokens)
 }
 
@@ -78,5 +69,9 @@ func main() {
 
 	flag.Parse()
 
+	_, tokens := lex(c)
+	for t := range tokens {
+		fmt.Printf("%#v\n", t)
+	}
 	// here is where i plug os.Stdout into some slot in my lexer/interpreter type so the brainfuck program can produce its output
 }

@@ -1,21 +1,17 @@
 package main
 
-type Token struct {
-	Type Type
-	Raw  rune
-}
+// type stateFunc func(m *Memory)
+type stateFunc func(*lexer) stateFunc
 
-type stateFunc func(m *Memory)
-
-type Type string
+type Token string
 
 const (
-	RShift    Type = ">"
-	LShift    Type = "<"
-	Inc       Type = "+"
-	Dec       Type = "-"
-	Output    Type = "."
-	Input     Type = ","
-	LeftJump  Type = "["
-	RightJump Type = "]"
+	RShiftToken Token = ">"
+	LShiftToken Token = "<"
+	IncToken    Token = "+"
+	DecToken    Token = "-"
+	GetToken    Token = "."
+	SetToken    Token = ","
+	LJumpToken  Token = "["
+	RJumpToken  Token = "]"
 )

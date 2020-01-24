@@ -1,9 +1,43 @@
 package main
 
 import (
+	"reflect"
 	"testing"
 )
 
+func Test_Lexer(t *testing.T) {
+	t.Run("trivial cases", func(t *testing.T) {
+		cases := []struct {
+			in       string
+			expected []Token
+		}{
+			{"+", []Token{IncToken}},
+			{"-", []Token{DecToken}},
+			{">", []Token{RShiftToken}},
+			{"<", []Token{LShiftToken}},
+			{"[", []Token{LJumpToken}},
+			{"]", []Token{RJumpToken}},
+			{",", []Token{SetToken}},
+			{".", []Token{GetToken}},
+		}
+
+		for _, tt := range cases {
+
+			_, tokens := lex(tt.in)
+			var actual []Token
+			for token := range tokens {
+				actual = append(actual, token)
+			}
+
+			if !reflect.DeepEqual(actual, tt.expected) {
+				t.Logf("Exepcted %s, got %s", tt.expected, actual)
+				t.Fail()
+			}
+		}
+	})
+}
+
+/*
 func Test_StateFuncs(t *testing.T) {
 	t.Run("unary ops", func(t *testing.T) {
 		cases := []struct {
@@ -26,3 +60,4 @@ func Test_StateFuncs(t *testing.T) {
 	})
 
 }
+*/
