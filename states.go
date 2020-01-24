@@ -20,6 +20,8 @@ func lexText(l *lexer) stateFunc {
 		return Get
 	case ",":
 		return Set
+	case "eof":
+		return nil
 	default:
 		return lexText
 	}
