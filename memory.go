@@ -5,14 +5,17 @@ package main
 // I COULD break this interface down into further ones, but at the moment
 // i don't really see a need to
 type Storage interface {
-	RShift(*lexer)
-	LShift(*lexer)
+	RShift()
+	LShift()
 
-	Inc(*lexer)
-	Dec(*lexer)
+	Inc()
+	Dec()
 
-	Get(*lexer)
-	Set(*lexer)
+	Get() int
+	Set()
+
+	LJump() bool
+	RJump() bool
 }
 
 func newMem() *Memory {
@@ -28,19 +31,15 @@ type Memory struct {
 	cells  map[int]int
 }
 
-/*
+func (m *Memory) RShift() { m.active++ }
 
-func (m *Memory) RShift(m *lexer) {
-	m.active++
-}
+func (m *Memory) LShift() { m.active-- }
 
-func (m *Memory) RShift(m *lexer) { m.active++ }
+func (m *Memory) Inc() { m.cells[m.active]++ }
+func (m *Memory) Dec() { m.cells[m.active]-- }
 
-func (m *Memory) LShift(m *lexer) { m.active-- }
+func (m *Memory) Get() int { return m.cells[m.active] }
+func (m *Memory) Set()     {} // { m.cells[m.active] = n }
 
-func (m *Memory) Inc(m *lexer) { m.cells[m.active]++ }
-func (m *Memory) Dec(m *lexer) { m.cells[m.active]-- }
-
-func (m *Memory) Get(m *lexer) int { return m.cells[m.active] }
-func (m *Memory) Set(m *lexer)     { m.cells[m.active] = n }
-*/
+func (m *Memory) RJump() bool { return m.Get() == 0 }
+func (m *Memory) LJump() bool { return !(m.Get() == 0) }
