@@ -17,5 +17,6 @@ func main() {
 	m := newMem()
 	i := New(c, os.Stdout, os.Stdin)
 	i.Run(m)
-	log.Printf("%#v", m)
+	// log.Printf("%#v", m)
+	log.Printf("%#v", i)
 }

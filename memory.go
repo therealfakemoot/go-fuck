@@ -20,7 +20,7 @@ type Storage interface {
 
 func newMem() *Memory {
 	var m Memory
-	m.cells = make(map[int]int)
+	m.cells = make(map[int]uint64)
 	return &m
 }
 
@@ -28,7 +28,7 @@ func newMem() *Memory {
 type Memory struct {
 	// active is the index of the currently "live" memory cell
 	active int
-	cells  map[int]int
+	cells  map[int]uint64
 }
 
 func (m *Memory) RShift() { m.active++ }
@@ -38,8 +38,8 @@ func (m *Memory) LShift() { m.active-- }
 func (m *Memory) Inc() { m.cells[m.active]++ }
 func (m *Memory) Dec() { m.cells[m.active]-- }
 
-func (m *Memory) Get() int { return m.cells[m.active] }
-func (m *Memory) Set()     {} // { m.cells[m.active] = n }
+func (m *Memory) Get() uint64 { return m.cells[m.active] }
+func (m *Memory) Set()        {} // { m.cells[m.active] = n }
 
 func (m *Memory) RJump() bool { return m.Get() == 0 }
 func (m *Memory) LJump() bool { return !(m.Get() == 0) }

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
+	// "log"
 )
 
 type Interpreter struct {
@@ -44,8 +44,8 @@ func NewInterpreter(ts chan Token, m Storage, w io.Writer, r io.Reader) *Interpr
 }
 
 func (i *Interpreter) Run(m *Memory) {
-	for j := 0; j < len(i.tokens)-1; j++ {
-		log.Printf("stepping through token: %s\n", i.tokens[j])
+	for j := 0; j < len(i.tokens); j++ {
+		// log.Printf("stepping through token: %s\n", i.tokens[j])
 		switch i.tokens[j] {
 		case RShiftToken:
 			m.RShift()
@@ -60,12 +60,17 @@ func (i *Interpreter) Run(m *Memory) {
 		case SetToken:
 			m.Set()
 		case LJumpToken:
+			i.stack = append(i.stack, j)
 			if m.LJump() {
 				j = i.stack[len(i.stack)-1]
 				i.stack = i.stack[:len(i.stack)-1]
 			}
 		case RJumpToken:
-			fallthrough
+			i.stack = append(i.stack, j)
+			if m.RJump() {
+				j = i.stack[len(i.stack)-1]
+				i.stack = i.stack[:len(i.stack)-1]
+			}
 		default:
 			return
 		}
