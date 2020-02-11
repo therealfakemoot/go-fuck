@@ -42,4 +42,4 @@ func (m *Memory) Get() uint64 { return m.cells[m.active] }
 func (m *Memory) Set()        {} // { m.cells[m.active] = n }
 
 func (m *Memory) RJump() bool { return m.Get() == 0 }
-func (m *Memory) LJump() bool { return !(m.Get() == 0) }
+func (m *Memory) LJump() bool { return m.Get() != 0 }
